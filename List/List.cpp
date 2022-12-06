@@ -97,4 +97,40 @@ List<T>& List<T>::operator=(const List<T>&& ls) {
 	ls.first = nullptr;
 }
 
+template <class T>
+bool List<T>::operator==(const List<T> ls) const {
+
+	if (ls.first == nullptr)
+		return;
+	Node* cur = first;
+	for (auto it = ls.begin(); it != nullptr; ++it) {
+		if (cur == nullptr || (*it).value != cur.value)
+			return false;
+
+		cur = cur->next;
+	}
+	return true;
+
+}
+
+template <class T>
+List<T>::Iterator& List<T>::begin() {
+	return Iterator(first);
+}
+
+template <class T>
+List<T>::Iterator& List<T>::end() {
+	return Iterator(nullptr);
+}
+
+template <class T>
+T List<T>::firstValue() const {
+	return first->value;
+}
+
+template <class T>
+bool List<T>::empty() {
+	return first->next == nullptr;
+}
+
 

@@ -25,6 +25,7 @@ class List {
 	class Iterator {
 	public:
 		Node* ptr;
+		Iterator(Node* p) : ptr(p) {}
 		Node& operator++();
 		Node& operator*();
 		bool operator==(Iterator i);
@@ -33,8 +34,7 @@ class List {
 	Iterator& begin();
 	Iterator& end();
 
-	T first() const;
-	T last() const;
+	T firstValue() const;
 	bool empty();
 	size_t size();
 
