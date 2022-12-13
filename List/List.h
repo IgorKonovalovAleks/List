@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include<initializer_list>
 
 template <class T>
@@ -13,6 +14,7 @@ class List {
 
 	List();
 	List(size_t n);
+	List(Node* f);
 	List(List<T>& old);
 	List(List<T>&& old);
 	List(std::initializer_list<T> in);
@@ -40,13 +42,13 @@ class List {
 
 	void clear();
 	void insert(int i, T v);
-	T erase(int);
+	T erase(int i);
 	void push_back(T v);
 	void push_front(T v);
 	T pop_front();
 	T pop_back();
 	List<T>& merge(const List<T>& ls) const;
 	void sort();
-
+	List<T>& cutInHalf();
 };
 
