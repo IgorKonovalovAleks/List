@@ -2,38 +2,46 @@
 #include <iostream>
 #include <initializer_list>
 
+
+template<class T>
+class Node {
+public:
+	Node* next;
+	T value;
+	Node* another; //для 17 задачи
+};
+
+
+
 template <class T>
 class List {
 
 public:
-	class Node {
-	public:
-		Node* next;
-		T value;
-	};
-
-	Node* first;
-
+	
+	Node<T>* first;
 
 	List(){ first = nullptr; }
 
-	List(size_t s) : first(nullptr) {
-		Node* cur = first;
-		for (int i = 0; i < s; i++) {
-			cur = new Node();
-			cur = cur->next;
+	List(size_t s) {
+		if (s > 0) {
+			first = new Node<T>();
+			auto cur = first;
+			for (int i = 1; i < s; i++) {
+				cur->next = new Node<T>();
+				cur = cur->next;
+			}
 		}
 	}
 
-	List(Node* f) : first(f) {}
+	List(Node<T>* f) : first(f) {}
 
 	List(List<T>& old) : first(nullptr) {
 		if (old.first == nullptr)
 			return;
-		Node* cur = first;
+		Node<T>* cur = first;
 		for (auto it = old.begin(); it != nullptr; ++it) {
-			cur = new Node();
-			cur->value = it.current().value;
+			cur = new Node<T>();
+			cur->value = it.value();
 			cur = cur->next;
 		}
 
@@ -47,18 +55,18 @@ public:
 	List(std::initializer_list<T> in) : first(nullptr) {
 		if (in.empty())
 			return;
-		Node* cur = first;
+		Node<T>* cur = first;
 		for (auto it : in) {
-			cur = new Node();
+			cur = new Node<T>();
 			cur->value = it;
 			cur = cur->next;
 		}
 	}
 
 	~List() {
-		Node* cur = first;
+		Node<T>* cur = first;
 		while (cur != nullptr) {
-			Node* tmp = cur->next;
+			Node<T>* tmp = cur->next;
 			delete[] cur;
 			cur = tmp;
 		}
@@ -72,9 +80,9 @@ public:
 			first = nullptr;
 			return *this;
 		}
-		Node* cur = first;
-		for (List<T>::Node* it = ls.first; it != nullptr; it = it->next) {
-			cur = new Node();
+		Node<T>* cur = first;
+		for (auto it = ls.first; it != nullptr; it = it->next) {
+			cur = new Node<T>();
 			cur->value = it->value;
 			cur = cur->next;
 		}
@@ -91,9 +99,9 @@ public:
 
 		if (ls.first == nullptr)
 			return;
-		Node* cur = first;
+		Node<T>* cur = first;
 		for (auto it = ls.begin(); it != nullptr; ++it) {
-			if (cur == nullptr || it.current().value != cur.value)
+			if (cur == nullptr || it.value() != cur.value)
 				return false;
 
 			cur = cur->next;
@@ -104,16 +112,37 @@ public:
 
 	class Iterator {
 	public:
-		Node* ptr;
-		Iterator(Node* p) : ptr(p) {}
-
-		Node& operator++() {
-			ptr = ptr->next;
-			return *ptr;
+		Node<T>* ptr;
+		Iterator(Node<T>* p) : ptr(p) {}
+		Iterator(Iterator& old) : ptr(old.ptr) {}
+		Iterator(Iterator&& old) : ptr(old.ptr) {
+			old.ptr = nullptr;
 		}
 
-		Node& current() {
-			return *ptr;
+		Iterator operator++() {
+			ptr = ptr->next;
+			return Iterator(ptr);
+		}
+
+		T value() {
+			return (*ptr).value;
+		}
+
+		T next() {
+			if (ptr->next == nullptr)
+				throw std::exception();
+			return (*(ptr->next)).value;
+		}
+
+		Iterator& operator=(const Iterator& old) {
+			ptr = old.ptr;
+			return *this;
+		}
+
+		Iterator& operator=(Iterator&& old) {
+			ptr = old.ptr;
+			old.ptr = nullptr;
+			return *this;
 		}
 
 		bool operator==(Iterator i) {
@@ -144,7 +173,7 @@ public:
 
 	size_t size() {
 		int res = 0;
-		for (auto it = begin(); it != nullptr; ++it) {
+		for (auto it = begin(); it != end(); ++it) {
 			res++;
 		}
 		return res;
@@ -152,43 +181,62 @@ public:
 
 	void print() {
 		for (List<T>::Iterator it = begin(); it != end(); ++it) {
-			Node a = it.current();
-			std::cout << a.value;
+			std::cout << it.value() << " ";
 		}
+		std::cout << '\n';
 	}
 
 	void clear() {
-		Node* cur = first;
+		Node<T>* cur = first;
 		while (cur != nullptr) {
-			Node* tmp = cur->next;
+			Node<T>* tmp = cur->next;
 			delete[] cur;
 			cur = tmp;
 		}
 	}
 
 	void insert(int i, T v) {
-		Node* cur = first;
-		for (int j = 0; j < i - 1; j++) {
-			cur = cur->next;
-		}
-
-		Node* nx = cur->next;
-		Node* nw = new Node();
-		nw->value = v;
-		nw->next = nx;
-		cur->next = nw;
-	}
-
-	T erase(int i) {
-		Node* cur = first;
+		Node<T>* cur = first;
 		for (int j = 0; j < i; j++) {
 			if (cur->next == nullptr)
 				throw std::exception();
 			cur = cur->next;
 		}
 
-		Node nx = cur->next;
+		Node<T>* nx = cur->next;
+		Node<T>* nw = new Node<T>();
+		nw->value = v;
+		nw->next = nx;
+		cur->next = nw;
+	}
+
+	T erase(int i) {                     //O(n) принимает номер удаляемого
+		if (i == 0)
+			return pop_front();
+		Node<T>* cur = first;
+		for (int j = 0; j < i - 1; j++) {
+			if (cur->next == nullptr)
+				throw std::exception();
+			cur = cur->next;
+		}
+
+		Node<T>* nx = cur->next;
 		cur->next = nx->next;
+		T res = nx->value;
+		delete[] nx;
+		return res;
+	}
+
+	T erase(Iterator prev) {               //O(1) принимает итератор на элемент перед удаляемым
+		if (prev.ptr == first) {
+			return pop_front();
+		}
+		if (prev.ptr->next == nullptr) {
+			throw std::exception();
+		}
+
+		Node<T>* nx = prev.ptr->next;
+		prev.ptr->next = prev.ptr->next->next;
 		T res = nx->value;
 		delete[] nx;
 		return res;
@@ -196,23 +244,23 @@ public:
 
 	void push_back(T v) {
 		if (first == nullptr) {
-			first = new Node();
+			first = new Node<T>();
 			first->next = nullptr;
 			first->value = v;
 			return;
 		}
-		Node* cur = first;
+		Node<T>* cur = first;
 		while (cur->next != nullptr) {
 			cur = cur->next;
 		}
-		Node* nd = new Node();
+		Node<T>* nd = new Node<T>();
 		nd->value = v;
 		nd->next = nullptr;
 		cur->next = nd;
 	}
 
 	void push_front(T v) {
-		Node* nd = new Node();
+		Node<T>* nd = new Node<T>();
 		nd->value = v;
 		nd->next = first;
 		first = nd;
@@ -221,7 +269,7 @@ public:
 	T pop_front() {
 		if (first == nullptr)
 			throw std::exception();
-		Node* nd = first;
+		Node<T>* nd = first;
 		first = nd->next;
 		T res = nd->value;
 		delete[] nd;
@@ -236,11 +284,11 @@ public:
 			delete[] first;
 			return res;
 		}
-		Node* cur = first;
+		Node<T>* cur = first;
 		while (cur->next->next != nullptr) {
 			cur = cur->next;
 		}
-		Node* nd = cur->next;
+		Node<T>* nd = cur->next;
 		cur->next = nullptr;
 		T res = nd->value;
 		delete[] nd;
@@ -249,8 +297,8 @@ public:
 
 	List<T> merge(const List<T>& ls) const {
 		List<T> res;
-		Node* p2 = ls.first;
-		Node* p1 = first;
+		Node<T>* p2 = ls.first;
+		Node<T>* p1 = first;
 
 		while (p1 != nullptr && p2 != nullptr) {
 
@@ -294,14 +342,13 @@ public:
 	}
 
 	List<T> cutInHalf() {
-		Node* fast = first;
-		Node* slow = first;
+		Node<T>* fast = first;
+		Node<T>* slow = first;
 
 		if (first->next == nullptr)
 			return List<T>();
 
 		if (first->next->next == nullptr) {
-			std::cout << "cut\n";
 			fast = first->next;
 			first->next = nullptr;
 			return List<T>(fast);
@@ -312,7 +359,7 @@ public:
 			slow = slow->next;
 		}
 
-		Node* nd = slow->next;
+		Node<T>* nd = slow->next;
 		slow->next = nullptr;
 		return List<T>(nd);
 
