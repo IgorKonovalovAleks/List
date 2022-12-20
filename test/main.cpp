@@ -1,3 +1,4 @@
+#include <gtest.h>
 #include "List.h"
 
 void task1(List<int>& a, int value) {
@@ -326,7 +327,7 @@ List<int> task17(List<int>& a) {
 	return res;
 }
 
-int main() {
+int main(int argc, char** argv) {
 
 	List<int> ordered;
 	ordered.push_back(1);
@@ -440,7 +441,8 @@ int main() {
 	for (auto it = b.first; it != nullptr; it = it->next)
 		std::cout << it->another->value;
 
-	return 0;
+	::testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
 }
 
 
