@@ -38,14 +38,21 @@ public:
 	List(List<T>& old) : first(nullptr) {
 		if (old.first == nullptr)
 			return;
-		first = new Node<T>();
-		Node<T>* cur = first;
+		int i = 0;
+		Node<T>* cur;
 		for (auto it = old.begin(); it != old.end(); ++it) {
-			cur->value = it.value();
-			cur = cur->next;
-			cur = new Node<T>();
+			if (i != 0) {
+				cur->next = new Node<T>();
+				cur = cur->next;
+				cur->value = it.ptr->value;
+			}
+			else {
+				first = new Node<T>();
+				cur = first;
+				i++;
+				cur->value = it.ptr->value;
+			}
 		}
-		delete cur;
 
 	}
 
@@ -57,21 +64,28 @@ public:
 	List(std::initializer_list<T> in) : first(nullptr) {
 		if (in.size() == 0)
 			return;
-		first = new Node<T>();
-		Node<T>* cur = first;
+		Node<T>* cur;
+		int i = 0;
 		for (T it : in) {
-			cur->value = it;
-			cur->next = new Node<T>();
-			cur = cur->next;
+			if (i != 0) {
+				cur->next = new Node<T>();
+				cur = cur->next;
+				cur->value = it;
+			}
+			else {
+				first = new Node<T>();
+				cur = first;
+				i++;
+				cur->value = it;
+			}
 		}
-		delete cur;
 	}
 
 	~List() {
 		Node<T>* cur = first;
 		while (cur != nullptr) {
 			Node<T>* tmp = cur->next;
-			delete[] cur;
+			delete cur;
 			cur = tmp;
 		}
 	}
@@ -84,11 +98,20 @@ public:
 			first = nullptr;
 			return *this;
 		}
-		Node<T>* cur = first;
-		for (auto it = ls.first; it != nullptr; it = it->next) {
-			cur->value = it->value;
-			cur->next = new Node<T>();
-			cur = cur->next;
+		int i = 0;
+		Node<T>* cur;
+		for (auto it = ls.begin(); it != ls.end(); ++it) {
+			if (i != 0) {
+				cur->next = new Node<T>();
+				cur = cur->next;
+				cur->value = it.ptr->value;
+			}
+			else {
+				first = new Node<T>();
+				cur = first;
+				i++;
+				cur->value = it.ptr->value;
+			}
 		}
 		return *this;
 	}
