@@ -38,12 +38,14 @@ public:
 	List(List<T>& old) : first(nullptr) {
 		if (old.first == nullptr)
 			return;
+		first = new Node<T>();
 		Node<T>* cur = first;
-		for (auto it = old.begin(); it != nullptr; ++it) {
-			cur = new Node<T>();
+		for (auto it = old.begin(); it != old.end(); ++it) {
 			cur->value = it.value();
 			cur = cur->next;
+			cur = new Node<T>();
 		}
+		delete cur;
 
 	}
 
@@ -53,14 +55,16 @@ public:
 	}
 
 	List(std::initializer_list<T> in) : first(nullptr) {
-		if (in.empty())
+		if (in.size() == 0)
 			return;
+		first = new Node<T>();
 		Node<T>* cur = first;
-		for (auto it : in) {
-			cur = new Node<T>();
+		for (T it : in) {
 			cur->value = it;
+			cur->next = new Node<T>();
 			cur = cur->next;
 		}
+		delete cur;
 	}
 
 	~List() {
@@ -82,8 +86,8 @@ public:
 		}
 		Node<T>* cur = first;
 		for (auto it = ls.first; it != nullptr; it = it->next) {
-			cur = new Node<T>();
 			cur->value = it->value;
+			cur->next = new Node<T>();
 			cur = cur->next;
 		}
 		return *this;
@@ -95,13 +99,18 @@ public:
 		return *this;
 	}
 
-	bool operator==(const List<T> ls) const {
+	bool operator==(const List<T>& const ls) const {
 
-		if (ls.first == nullptr)
-			return;
+		if (ls.first == nullptr) {
+			if (first == nullptr)
+				return true;
+			else
+				return false;
+		}
+
 		Node<T>* cur = first;
 		for (auto it = ls.begin(); it != nullptr; ++it) {
-			if (cur == nullptr || it.value() != cur.value)
+			if (cur == nullptr || it.value() != cur->value)
 				return false;
 
 			cur = cur->next;
@@ -155,11 +164,11 @@ public:
 
 	};
 
-	Iterator begin() {
+	Iterator begin() const {
 		return Iterator(first);
 	}
 
-	Iterator end() {
+	Iterator end() const {
 		return Iterator(nullptr);
 	}
 
@@ -167,11 +176,11 @@ public:
 		return first->value;
 	}
 
-	bool empty() {
+	bool empty() const {
 		return first->next == nullptr;
 	}
 
-	size_t size() {
+	size_t size() const {
 		int res = 0;
 		for (auto it = begin(); it != end(); ++it) {
 			res++;
@@ -179,7 +188,7 @@ public:
 		return res;
 	}
 
-	void print() {
+	void print() const {
 		for (List<T>::Iterator it = begin(); it != end(); ++it) {
 			std::cout << it.value() << " ";
 		}
@@ -228,9 +237,7 @@ public:
 	}
 
 	T erase(Iterator prev) {               //O(1) принимает итератор на элемент перед удал€емым
-		if (prev.ptr == first) {
-			return pop_front();
-		}
+
 		if (prev.ptr->next == nullptr) {
 			throw std::exception();
 		}
