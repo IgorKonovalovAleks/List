@@ -222,7 +222,7 @@ public:
 		Node<T>* cur = first;
 		while (cur != nullptr) {
 			Node<T>* tmp = cur->next;
-			delete[] cur;
+			delete cur;
 			cur = tmp;
 		}
 	}
@@ -255,7 +255,7 @@ public:
 		Node<T>* nx = cur->next;
 		cur->next = nx->next;
 		T res = nx->value;
-		delete[] nx;
+		delete nx;
 		return res;
 	}
 
@@ -268,7 +268,7 @@ public:
 		Node<T>* nx = prev.ptr->next;
 		prev.ptr->next = prev.ptr->next->next;
 		T res = nx->value;
-		delete[] nx;
+		delete nx;
 		return res;
 	}
 
@@ -302,7 +302,7 @@ public:
 		Node<T>* nd = first;
 		first = nd->next;
 		T res = nd->value;
-		delete[] nd;
+		delete nd;
 		return res;
 	}
 
@@ -311,7 +311,7 @@ public:
 			throw std::exception();
 		else if (first->next == nullptr) {
 			T res = first->value;
-			delete[] first;
+			delete first;
 			return res;
 		}
 		Node<T>* cur = first;
@@ -321,7 +321,7 @@ public:
 		Node<T>* nd = cur->next;
 		cur->next = nullptr;
 		T res = nd->value;
-		delete[] nd;
+		delete nd;
 		return res;
 	}
 
