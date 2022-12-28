@@ -242,6 +242,19 @@ public:
 		cur->next = nw;
 	}
 
+	void insert(Node<T>* n, T v) {        //O(1)
+		if (first != nullptr) {
+			n->next = new Node<T>();
+			n->next->value = v;
+			n->next->next = nullptr;
+		}
+		else {
+			first = new Node<T>();
+			first->value = v;
+			first->next = nullptr;
+		}
+	}
+
 	T erase(int i) {                     //O(n) принимает номер удаляемого
 		if (i == 0)
 			return pop_front();
