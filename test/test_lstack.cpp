@@ -1,5 +1,6 @@
 #include <gtest.h>
 #include "LStack.h"
+#include "LQueue.h"
 
 TEST(lstack, can_create_empty_stack) {
 	EXPECT_NO_THROW(List<int> a);
@@ -49,3 +50,11 @@ TEST(lstack, size_is_calculated_correctly) {
 	a.push(3);
 	EXPECT_EQ(2, a.getSize());
 }
+
+TEST(lQueue, push_back_works_correctly) {
+	LQueue<int> a;
+	a.push(1);
+	a.push(2);
+	EXPECT_EQ(1, a.getTop());
+}
+

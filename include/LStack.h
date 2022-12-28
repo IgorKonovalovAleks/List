@@ -2,7 +2,6 @@
 #include <iostream>
 #include "List.h"
 
-const unsigned int DEFAULT_CAPACITY = 256;
 
 template <class T>
 class LStack {
